@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """
     1-concat.py
     Write a type-annotated function concat that
