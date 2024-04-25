@@ -9,6 +9,6 @@
 from typing import List, Union
 
 
-def sum_mixed_list(mxd_list: List[Union[int, float]])-> float:
+def sum_mixed_list(mxd_list: List[Union[int, float]]) -> float:
     """Returns the sum of a mixed_list as a float"""
     return sum(mxd_list)
