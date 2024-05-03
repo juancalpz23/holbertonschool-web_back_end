@@ -7,20 +7,18 @@ from pymongo import MongoClient
 
 
 if __name__ == "__main__":
-    client = MongoClient('mongodb://127.0.0.1:27017')
-    db_nginx = client.logs.nginx
-    methods = ["GET", "POST", "PUT", "PATCH", "DELETE"]
+    """
+    Function that provides some stats about Nginx logs stored in MongoDB
+    """
+    client = MongoClient("mongodb://127.0.0.1:27017/")
+    collection = client.logs.nginx
 
-    count_logs = db_nginx.count_documents({})
-    print(f'{count_logs} logs')
+    print(f"{collection.estimated_document_count()} logs")
+    print("Methods:")
 
-    print('Methods:')
-    for method in methods:
-        count_method = db_nginx.count_documents({'method': method})
-        print(f'\tmethod {method}: {count_method}')
+    for method in ["GET", "POST", "PUT", "PATCH", "DELETE"]:
+        count = collection.count_documents({"method": method})
+        print(f"\tmethod {method}: {count}")
 
-    check = db_nginx.count_documents(
-        {"method": "GET", "path": "/status"}
-    )
-
-    print(f'{check} status check')
+    get = collection.count_documents({"method": "GET", "path": "/status"})
+    print(f"{get} status check")
