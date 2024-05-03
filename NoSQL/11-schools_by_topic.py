@@ -5,7 +5,7 @@
 import pymongo
 
 
-def schools_by_topic(mongo_collection, topic:str):
+def schools_by_topic(mongo_collection, topic: str):
     """
         Search the school based in school
         and return a list
@@ -13,7 +13,7 @@ def schools_by_topic(mongo_collection, topic:str):
     query: dict = {"topics": topic}
     schools: list = []
 
-    for school in mongo_collection.fins(query):
+    for school in mongo_collection.find(query):
         schools.append(school)
 
     return schools
