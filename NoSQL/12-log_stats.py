@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
     Module 12-log_stats.py
-    Script that provides some stats
+    Script that provides stats
 """
 from pymongo import MongoClient
 
