@@ -5,22 +5,24 @@
 """
 from pymongo import MongoClient
 
+# Connect to MongoDB
+client = MongoClient("mongodb://:127.0.0.1:27017/")
+db = client["logs"]
+collection = db["nginx"]
 
-if __name__ == "__main__":
-    client = MongoClient('mongodb://127.0.0.1:27017')
-    db_nginx = client.logs.nginx
-    methods = ["GET", "POST", "PUT", "PATCH", "DELETE"]
+# Get the total number of logs
+total_logs = collection.count_documents({})
 
-    count_logs = db_nginx.count_documents({})
-    print(f'{count_logs} logs')
+# Get the counts for each HTTP method
+http_methods = ["GET", "POST", "PUT", "PATCH", "DELETE"]
+method_counts = {method: collection.count_documents({"method": method}) for method in http_methods}
 
-    print('Methods:')
-    for method in methods:
-        count_method = db_nginx.count_documents({'method': method})
-        print(f'\tmethod {method}: {count_method}')
+# Get the count for method=GET and path=/status
+get_status_count = collection.count_documents({"method": "GET", "path": "/status"})
 
-    check = db_nginx.count_documents(
-        {"method": "GET", "path": "/status"}
-    )
-
-    print(f'{check} status check')
+# Display the results
+print(f"{total_logs} logs")
+print("Methods:")
+for method, count in method_counts.items():
+    print(f"\t{method}: {count}")
+print(f"GET requests with path=/status: {get_status_count}")
