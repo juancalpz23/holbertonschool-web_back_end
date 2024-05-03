@@ -5,24 +5,20 @@
 """
 from pymongo import MongoClient
 
-# Connect to MongoDB
-client = MongoClient("mongodb://:127.0.0.1:27017/")
-db = client["logs"]
-collection = db["nginx"]
 
-# Get the total number of logs
-total_logs = collection.count_documents({})
+if __name__ == "__main__":
+    """ check for all elements in a collection """
+    client = MongoClient('mongodb://127.0.0.1:27017')
+    collection = client.logs.nginx
 
-# Get the counts for each HTTP method
-http_methods = ["GET", "POST", "PUT", "PATCH", "DELETE"]
-method_counts = {method: collection.count_documents({"method": method}) for method in http_methods}
+    print(f"{collection.estimated_document_count()} logs")
 
-# Get the count for method=GET and path=/status
-get_status_count = collection.count_documents({"method": "GET", "path": "/status"})
+    print("Methods:")
+    for method in ["GET", "POST", "PUT", "PATCH", "DELETE"]:
+        method_count = collection.count_documents({'method': method})
+        print(f"\tmethod {method}: {method_count}")
 
-# Display the results
-print(f"{total_logs} logs")
-print("Methods:")
-for method, count in method_counts.items():
-    print(f"\t{method}: {count}")
-print(f"GET requests with path=/status: {get_status_count}")
+    check_get = collection.count_documents(
+        {'method': 'GET', 'path': "/status"})
+    print(f"{check_get} status check")
+    
