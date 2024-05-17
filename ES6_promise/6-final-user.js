@@ -1,10 +1,13 @@
 #!/usr/bin/node
-import handleProfileSignup from './6-profile-signup';
+import signUpUser from './4-user-promise.js';
+import uploadPhoto from './5-photo-reject.js';
 
-handleProfileSignup('Alice', 'Doe', 'test-photo.jpg')
-  .then((results) => {
-    console.log(results);
-  })
-  .catch((error) => {
-    console.error(error);
-  });
+export default function handleProfileSignup(firstName, lastName, fileName) {
+  return Promise.allSettled([
+    signUpUser(firstName, lastName),
+    uploadPhoto(fileName),
+  ]).then((results) => results.map((result) => ({
+    status: result.status,
+    value: result.status === 'fulfilled' ? result.value : result.reason,
+  })));
+}
