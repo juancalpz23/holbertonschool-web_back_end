@@ -1,4 +1,3 @@
-#!/usr/bin/node
 import uploadPhoto from './5-photo-reject';
 import signUpUser from './4-user-promise';
 
