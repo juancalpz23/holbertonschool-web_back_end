@@ -11,7 +11,7 @@ from base_caching import BaseCaching
 class FIFOCache(BaseCaching):
 
     """
-        FIFOCache inherits from BaseCaching and implements a FIFO caching system.
+        FIFOCache inherits from BaseCaching and implements FIFO caching
     """
 
     def __init__(self):
@@ -28,7 +28,7 @@ class FIFOCache(BaseCaching):
         """
             Add an item to the cache using FIFO.
             If key or item is None, do nothing.
-            If the cache exceeds MAX_ITEMS, discard the first item added (FIFO).
+            If the cache exceeds MAX_ITEMS, discard the first item added FIFO
         """
 
         if key is not None and item is not None:
@@ -38,7 +38,7 @@ class FIFOCache(BaseCaching):
             self.cache_data[key] = item
 
             if len(self.cache_data) > BaseCaching.MAX_ITEMS:
-                first_key = self.keys_order.pop(0)  # Remove the first added key
+                first_key = self.keys_order.pop(0)
                 del self.cache_data[first_key]
                 print(f"DISCARD: {first_key}")
 
