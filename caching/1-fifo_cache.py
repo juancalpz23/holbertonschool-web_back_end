@@ -15,7 +15,7 @@ class FIFOCache(BaseCaching):
     """
 
     def __init__(self):
-    
+
         """
             Initialize the cache
         """
@@ -28,7 +28,7 @@ class FIFOCache(BaseCaching):
         """
             Add an item to the cache using FIFO.
             If key or item is None, do nothing.
-            If the cache exceeds MAX_ITEMS, discard the first item added FIFO
+            If the cache exceeds MAX_ITEMS, discard the first item FIFO
         """
 
         if key is not None and item is not None:
