@@ -22,26 +22,27 @@ class MRUCache(BaseCaching):
         """
 
         super().__init__()
-        self.usage_order = []  # To track the usage order of keys
+        self.most_recent = None
 
     def put(self, key, item):
 
         """
             Add an item to the cache using MRU.
             If key or item is None, do nothing.
-            If the cache exceeds MAX_ITEMS, discard MRU
+            If the cache exceeds MAX_ITEMS, discard the (MRU).
         """
-
+    
         if key is not None and item is not None:
             if key in self.cache_data:
-                self.usage_order.remove(key)
-            self.cache_data[key] = item
-            self.usage_order.append(key)
+                self.cache_data[key] = item
+            else:
+                if len(self.cache_data) >= BaseCaching.MAX_ITEMS:
+                    print(f"DISCARD: {self.most_recent}")
+                    del self.cache_data[self.most_recent]
 
-            if len(self.cache_data) > BaseCaching.MAX_ITEMS:
-                mru_key = self.usage_order.pop()
-                del self.cache_data[mru_key]
-                print(f"DISCARD: {mru_key}")
+                self.cache_data[key] = item
+
+            self.most_recent = key
 
     def get(self, key):
 
@@ -54,6 +55,5 @@ class MRUCache(BaseCaching):
         if key is None or key not in self.cache_data:
             return None
 
-        self.usage_order.remove(key)
-        self.usage_order.append(key)
+        self.most_recent = key
         return self.cache_data[key]
