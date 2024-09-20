@@ -22,20 +22,19 @@ class MRUCache(BaseCaching):
         """
 
         super().__init__()
-        self.usage_order = []
+        self.usage_order = []  # To track the usage order of keys
 
     def put(self, key, item):
 
         """
             Add an item to the cache using MRU.
             If key or item is None, do nothing.
-            If the cache exceeds MAX_ITEMS, discard the MRU
+            If the cache exceeds MAX_ITEMS, discard MRU
         """
 
         if key is not None and item is not None:
             if key in self.cache_data:
                 self.usage_order.remove(key)
-
             self.cache_data[key] = item
             self.usage_order.append(key)
 
