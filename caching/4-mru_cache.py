@@ -31,7 +31,7 @@ class MRUCache(BaseCaching):
             If key or item is None, do nothing.
             If the cache exceeds MAX_ITEMS, discard the (MRU).
         """
-    
+
         if key is not None and item is not None:
             if key in self.cache_data:
                 self.cache_data[key] = item
