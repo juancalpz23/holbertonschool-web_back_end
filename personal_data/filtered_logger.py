@@ -7,9 +7,11 @@ import re
 from typing import List
 
 
-def filter_datum(fields: List[str], redaction: str, message: str, separator: str) -> str:
+def filter_datum(fields: List[str], redaction: str,
+                 message: str, separator: str) -> str:
     """
-    Obfuscates specific fields in a log message by replacing their values with redaction.
+    Hide specific fields in a log message by replacing them with redactions
     """
 
-    return re.sub(f"({'|'.join(fields)})=.*?{separator}", f"\\1={redaction}{separator}", message)
+    return re.sub(f"({'|'.join(fields)})=.*?{separator}",
+                  f"\\1={redaction}{separator}", message)
