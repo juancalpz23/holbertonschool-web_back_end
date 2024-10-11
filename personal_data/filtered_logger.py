@@ -15,7 +15,7 @@ def filter_datum(fields: List[str], redaction: str,
     """
 
     return sub(f"({'|'.join(fields)})=.*?{separator}",
-               f"\\1={redaction}{separator} ", message)
+               f"\\1={redaction}{separator}", message)
 
 
 class RedactingFormatter(logging.Formatter):
