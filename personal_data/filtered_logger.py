@@ -4,6 +4,9 @@ Defines filter_datum function to obfuscate fields in a log message.
 """
 
 import logging
+import os
+import mysql.connector
+from mysql.connector import connection
 from typing import List, Tuple
 from re import sub
 
@@ -68,3 +71,32 @@ def filter_datum(fields: List[str], redaction: str,
     """
     return sub(f"({'|'.join(fields)})=.*?{separator}",
                f"\\1={redaction}{separator}", message)
+
+
+def get_db() -> connection.MySQLConnection:
+    """
+    Connects to a MySQL database using credentials
+    stored in environment variables.
+
+    Returns:
+        MySQLConnection: A MySQL database connection object.
+    """
+    # Get environment variables for the database connection
+    username = os.getenv("PERSONAL_DATA_DB_USERNAME", "root")
+    password = os.getenv("PERSONAL_DATA_DB_PASSWORD", "")
+    host = os.getenv("PERSONAL_DATA_DB_HOST", "localhost")
+    database = os.getenv("PERSONAL_DATA_DB_NAME")
+
+    # Ensure that the database name is provided
+    if not database:
+        raise ValueError("Database name must be set in PERSONAL_DATA_DB_NAME")
+
+    # Establish the connection
+    conn = mysql.connector.connect(
+        user=username,
+        password=password,
+        host=host,
+        database=database
+    )
+
+    return conn
