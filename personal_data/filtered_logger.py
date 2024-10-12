@@ -63,12 +63,13 @@ def filter_datum(fields: List[str], redaction: str,
     Adds a space after the separator for readability.
     """
     return sub(f"({'|'.join(fields)})=.*?{separator}",
-               f"\\1={redaction}{separator} ", message).strip()
+               f"\\1={redaction}{separator}", message)
 
 
 def get_db() -> connection.MySQLConnection:
     """
-    Connects to a MySQL database using credentials stored in environment variables
+    Connects to a MySQL database using credentials
+    stored in environment variables
     """
     # Get environment variables for the database connection
     username = os.getenv("PERSONAL_DATA_DB_USERNAME", "root")
@@ -78,7 +79,7 @@ def get_db() -> connection.MySQLConnection:
 
     # Ensure that the database name is provided
     if not database:
-        raise ValueError("Database name must be set in PERSONAL_DATA_DB_NAME")
+        raise ValueError("Database name must be PERSONAL_DATA_DB_NAME")
 
     # Establish the connection
     conn = mysql.connector.connect(
