@@ -3,7 +3,7 @@ import bcrypt
 
 def hash_password(password: str) -> bytes:
     """
-    Hash a password using bcrypt with a randomly-generated salt.
+    Hash a password using bcrypt with a randomly-generated salt
     """
     # Generate a salt
     salt = bcrypt.gensalt()
