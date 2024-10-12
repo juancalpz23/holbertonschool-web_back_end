@@ -3,36 +3,32 @@
 Defines filter_datum function to obfuscate fields in a log message.
 """
 
-import logging
 import os
 import mysql.connector
 from mysql.connector import connection
-from typing import List, Tuple
+import logging
 from re import sub
+from typing import List, Tuple
 
-# Update PII_FIELDS with the relevant sensitive fields from user_data.csv
+# Update PII_FIELDS with relevant sensitive fields
 PII_FIELDS: Tuple[str, ...] = ('name', 'email', 'phone', 'ssn', 'password')
 
 
 def get_logger() -> logging.Logger:
     """
-    Creates a logger named 'user_data' with logging level
-    INFO that hides PII fields.
+    Creates a logger named 'user_data' with logging
+    level INFO that hides PII fields.
 
     Returns:
         logging.Logger: Configured logger object.
     """
-    # Create logger
     logger = logging.getLogger("user_data")
     logger.setLevel(logging.INFO)
     logger.propagate = False
 
-    # Create StreamHandler and set formatter
     stream_handler = logging.StreamHandler()
     formatter = RedactingFormatter(PII_FIELDS)
     stream_handler.setFormatter(formatter)
-
-    # Add handler to logger
     logger.addHandler(stream_handler)
 
     return logger
@@ -66,17 +62,18 @@ class RedactingFormatter(logging.Formatter):
 def filter_datum(fields: List[str], redaction: str,
                  message: str, separator: str) -> str:
     """
-    Hide specific fields in a log message by replacing them with redactions.
+    Hide specific fields in a log message by replacing
+    them with redactions.
     Adds a space after the separator for readability.
     """
-    return sub(f"({'|'.join(fields)})=.*?{separator}",
-               f"\\1={redaction}{separator}", message)
+    return re.sub(f"({'|'.join(fields)})=.*?{separator}",
+                  f"\\1={redaction}{separator}", message)
 
 
 def get_db() -> connection.MySQLConnection:
     """
-    Connects to a MySQL database using credentials
-    stored in environment variables.
+    Connects to a MySQL database using credentials stored
+    in environment variables.
 
     Returns:
         MySQLConnection: A MySQL database connection object.
@@ -100,3 +97,41 @@ def get_db() -> connection.MySQLConnection:
     )
 
     return conn
+
+
+def main() -> None:
+    """
+    Main function that fetches data from the users
+    table and logs each row
+    with PII fields filtered.
+    """
+    # Get logger and database connection
+    logger = get_logger()
+    db_connection = get_db()
+
+    # Fetch all rows from the 'users' table
+    # Using dictionary=True for easier access to columns by name
+    cursor = db_connection.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM users;")
+    rows = cursor.fetchall()
+
+    # Log each row with sensitive information redacted
+    for row in rows:
+        log_message = (f"name={row.get('name')};
+                       email={row.get('email')};
+                       phone={row.get('phone')};
+                       "f"ssn={row.get('ssn')};
+                       password={row.get('password')};
+                       ip={row.get('ip')};
+                       "f"last_login={row.get('last_login')};
+                       user_agent={row.get('user_agent')};")
+        logger.info(log_message)
+
+    # Close the cursor and connection
+    cursor.close()
+    db_connection.close()
+
+
+# Ensure main function is run only when the module is executed
+if __name__ == "__main__":
+    main()
