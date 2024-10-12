@@ -1,3 +1,9 @@
+#!/usr/bin/env python3
+"""
+Password hasher function
+"""
+
+
 import bcrypt
 
 
