@@ -4,10 +4,10 @@ Defines filter_datum function to obfuscate fields in a log message.
 """
 
 import os
+import re
 import mysql.connector
 from mysql.connector import connection
 import logging
-from re import sub
 from typing import List, Tuple
 
 # Update PII_FIELDS with relevant sensitive fields
