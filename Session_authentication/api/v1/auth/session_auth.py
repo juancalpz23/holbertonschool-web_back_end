@@ -4,6 +4,8 @@ Module for Session Authentication
 """
 from api.v1.auth.auth import Auth
 import uuid
+from models.user import User
+from os import getenv
 
 
 class SessionAuth(Auth):
@@ -37,3 +39,24 @@ class SessionAuth(Auth):
 
         # Use .get() to retrieve the user ID from the dictionary
         return self.user_id_by_session_id.get(session_id)
+
+    def session_cookie(self, request=None):
+        """
+        Returns the session cookie value from the request
+        """
+        if request is None:
+            return None
+
+        return request.cookies.get(getenv("SESSION_NAME", "_my_session_id"))
+
+    def current_user(self, request=None):
+        """
+        Returns the User instance based on a session ID from the cookie
+        """
+        session_id = self.session_cookie(request)  # Get session ID from cookie
+        user_id = self.user_id_for_session_id(session_id)  # Get user ID
+
+        if user_id is None:
+            return None  # No user associated with the session ID
+
+        return User.get(user_id)
