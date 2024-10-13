@@ -15,12 +15,10 @@ def login():
         - Logged in user
     """
     email = request.form.get('email')
-
     if not email:
         return jsonify({"error": "email missing"}), 400
 
     password = request.form.get('password')
-
     if not password:
         return jsonify({"error": "password missing"}), 400
 
@@ -42,7 +40,6 @@ def login():
     session_id = auth.create_session(user.id)
 
     SESSION_NAME = getenv("SESSION_NAME")
-
     response = jsonify(user.to_json())
     response.set_cookie(SESSION_NAME, session_id)
 
