@@ -89,13 +89,16 @@ class BasicAuth(Auth):
         if not users or len(users) == 0:
             return None  # No user found
 
-        user = users[0]  # Assume the first match is the user we're looking for
-
-        # Validate the password
-        if not user.is_valid_password(user_pwd):
+        try:
+            found_users = User.search({'email': user_email})
+        except Exception:
             return None
 
-        return user
+        for user in found_users:
+            if user.is_valid_password(user_pwd):
+                return user
+
+        return None
 
     def current_user(self, request=None) -> TypeVar('User'):
         """
