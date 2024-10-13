@@ -5,16 +5,15 @@ Module of Session Authentication views
 from api.v1.views import app_views
 from flask import jsonify, request, abort
 from models.user import User
-from api.v1.app import auth  # Import here to avoid circular import
 from os import getenv
+from api.v1.app import auth  # Import here to avoid circular import
 
 
 @app_views.route('/auth_session/login', methods=['POST'], strict_slashes=False)
 @app_views.route('/auth_session/login/',
                  methods=['POST'], strict_slashes=False)
 def login() -> str:
-    """
-    POST /api/v1/auth_session/login
+    """POST /api/v1/auth_session/login
     Return:
       - JSON representation of the User object if successful
       - 400 if email or password is missing
