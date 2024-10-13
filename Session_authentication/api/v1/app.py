@@ -71,8 +71,11 @@ def before_request_handler():
     if auth.authorization_header(request) is None:
         abort(401)  # Raise 401 Unauthorized if header is missing
 
+    # Assign the current user to the request
+    request.current_user = auth.current_user(request)
+
     # Validate the current user
-    if auth.current_user(request) is None:
+    if request.current_user is None:
         abort(403)  # Raise 403 Forbidden if user is not authenticated
 
 
