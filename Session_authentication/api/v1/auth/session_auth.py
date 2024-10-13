@@ -27,3 +27,13 @@ class SessionAuth(Auth):
         self.user_id_by_session_id[session_id] = user_id
 
         return session_id  # Return the created Session ID
+
+    def user_id_for_session_id(self, session_id: str = None) -> str:
+        """
+        Return a User ID based on a Session ID
+        """
+        if session_id is None or not isinstance(session_id, str):
+            return None  # Return None if session_id is invalid
+
+        # Use .get() to retrieve the user ID from the dictionary
+        return self.user_id_by_session_id.get(session_id)
