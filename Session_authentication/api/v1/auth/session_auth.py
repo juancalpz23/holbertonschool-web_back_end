@@ -51,8 +51,7 @@ class SessionAuth(Auth):
 
     def destroy_session(self, request=None):
         """
-        Deletes de user session / logout
-        """
+        Deletes de user session / logout"""
 
         if request is None:
             return False
