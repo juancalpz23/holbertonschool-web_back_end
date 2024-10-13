@@ -11,7 +11,7 @@ class SessionAuth(Auth):
     Session Authentication class that inherits from Auth
     """
 
-    user_id_by_session_id = {}  # Class attribute to store user IDs by session IDs
+    user_id_by_session_id = {}  # Class attribute
 
     def create_session(self, user_id: str = None) -> str:
         """
