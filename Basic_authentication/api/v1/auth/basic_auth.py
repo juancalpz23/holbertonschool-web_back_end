@@ -42,3 +42,19 @@ class BasicAuth(Auth):
         except (base64.binascii.Error, UnicodeDecodeError):
             # Handle decoding errors
             return None
+
+    def extract_user_credentials(
+            self, decoded_base64_authorization_header: str) -> (str, str):
+        """
+        Extracts the user email and password from the decoded Base64 string.
+        """
+        if decoded_base64_authorization_header is None or not isinstance(
+                decoded_base64_authorization_header, str):
+            return None, None
+
+        if ':' not in decoded_base64_authorization_header:
+            return None, None
+
+        # Split the string into email and password
+        email, password = decoded_base64_authorization_header.split(':', 1)
+        return email, password
