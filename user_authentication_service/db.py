@@ -3,7 +3,6 @@
 DB module: Handles database interactions with SQLAlchemy.
 """
 
-import bcrypt
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session
@@ -36,20 +35,11 @@ class DB:
             self.__session = DBSession()
         return self.__session
 
-    def _hash_password(self, password: str) -> bytes:
-        """
-        Hash a password using bcrypt.
-        """
-        salt = bcrypt.gensalt()  # Generate a salt
-        return bcrypt.hashpw(password.encode(), salt)  # Return hashed password
-
-
-    def add_user(self, email: str, password: str) -> User:
+    def add_user(self, email: str, hashed_password: str) -> User:
         """
         Add a new user to the database.
         """
-        hashed_password = self._hash_password(password)
-        new_user = User(email=email, hashed_password=hashed_password.decode())
+        new_user = User(email=email, hashed_password=hashed_password)
         self._session.add(new_user)  # Stage the new user for insertion
         self._session.commit()  # Commit the transaction to save the user
         return new_user  # Return the created User object
