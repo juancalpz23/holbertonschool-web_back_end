@@ -19,14 +19,15 @@ class DB:
         Initialize a new DB instance, setting up the SQLite database.
         """
         self._engine = create_engine("sqlite:///a.db", echo=True)
-        Base.metadata.drop_all(self._engine)  # Clear existing data (for testing purposes)
-        Base.metadata.create_all(self._engine)  # Create tables
+        Base.metadata.drop_all(self._engine)
+        Base.metadata.create_all(self._engine)
         self.__session = None
 
     @property
     def _session(self) -> Session:
         """
-        Memoized session object. This ensures only one session is active at a time.
+        Memoized session object. This ensures only one
+        session is active at a time.
         """
         if self.__session is None:
             DBSession = sessionmaker(bind=self._engine)
