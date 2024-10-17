@@ -6,6 +6,7 @@ DB module: Handles database interactions with SQLAlchemy.
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session
+from sqlalchemy.exc import NoResultFound, InvalidRequestError
 from user import Base, User
 
 
@@ -42,3 +43,14 @@ class DB:
         self._session.add(new_user)  # Stage the new user for insertion
         self._session.commit()  # Commit the transaction to save the user
         return new_user  # Return the created User object
+
+    def find_user_by(self, **kwargs) -> User:
+        """
+        Find a user by arbitrary keyword arguments.
+        """
+        try:
+            return self._session.query(User).filter_by(**kwargs).one()
+        except NoResultFound:
+            raise NoResultFound("No user found matching the criteria.")
+        except InvalidRequestError:
+            raise InvalidRequestError("Invalid query arguments provided.")
