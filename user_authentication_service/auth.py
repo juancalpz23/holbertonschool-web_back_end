@@ -4,6 +4,7 @@ Authentication module for user registration and password management.
 """
 
 import bcrypt
+import uuid
 from db import DB
 from user import User
 from sqlalchemy.orm.exc import NoResultFound
@@ -15,6 +16,15 @@ def _hash_password(password: str) -> bytes:
     """
     salt = bcrypt.gensalt()
     return bcrypt.hashpw(password.encode(), salt)
+
+
+def _generate_uuid() -> str:
+    """
+    Generate a new UUID and return its string representation.
+
+    This is a private function, meant to be used internally in the module.
+    """
+    return str(uuid.uuid4())
 
 
 class Auth:
