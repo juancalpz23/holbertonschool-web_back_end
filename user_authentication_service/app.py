@@ -128,7 +128,7 @@ def update_password():
 
     try:
         AUTH.update_password(reset_token, new_password)
-        return jsonify({message}), 200
+        return jsonify(message), 200
     except ValueError:
         return abort(403)
 
