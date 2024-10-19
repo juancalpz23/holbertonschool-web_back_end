@@ -58,3 +58,15 @@ class Auth:
                                   user.hashed_password.encode())
         except (NoResultFound, AttributeError):
             return False
+
+    def create_session(self, email: str) -> str:
+        """
+        Create a new session ID for the user with the given email
+        """
+        try:
+            user = self._db.find_user_by(email=email)  # Find user by email
+            session_id = _generate_uuid()  # Generate a new UUID for session
+            self._db.update_user(user.id, session_id=session_id)
+            return session_id
+        except NoResultFound:
+            return ""
