@@ -118,16 +118,16 @@ def update_password():
     PUT /reset_password route to update a user's password.
     Expects 'email', 'reset_token', and 'new_password' in form data.
     """
-    email = request.form.get('email')
-    reset_token = request.form.get('reset_token')
-    new_password = request.form.get('new_password')
-
-    if not email or not reset_token or not new_password:
-        message = {"email": email, "message": "Password updated"}
-        return jsonify(message), 400
+    try:
+        email = request.form.get('email')
+        reset_token = request.form.get('reset_token')
+        new_password = request.form.get('new_password')
+    except KeyError:
+        abort(400)
 
     try:
         AUTH.update_password(reset_token, new_password)
+        message = {"email": email, "message": "Password updated"}
         return jsonify(message), 200
     except ValueError:
         return abort(403)
