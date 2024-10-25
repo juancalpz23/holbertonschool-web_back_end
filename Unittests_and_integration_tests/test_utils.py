@@ -29,6 +29,6 @@ class TestAccessNestedMap(unittest.TestCase):
         """Test that KeyError is raised for invalid paths."""
         with self.assertRaises(KeyError) as context:
             access_nested_map(nested_map, path)
-        
+
         # Assert the exception message matches the missing key.
         self.assertEqual(str(context.exception), f"'{path[-1]}'")
