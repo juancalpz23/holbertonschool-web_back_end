@@ -6,7 +6,7 @@ Unit tests for the access_nested_map function from the utils module.
 import unittest
 from unittest.mock import patch, Mock
 from parameterized import parameterized
-from utils import access_nested_map, get_json
+from utils import access_nested_map, get_json, memoize
 
 
 class TestAccessNestedMap(unittest.TestCase):
@@ -63,3 +63,38 @@ class TestGetJson(unittest.TestCase):
 
         # Assert that the result from get_json matches the expected payload
         self.assertEqual(result, test_payload)
+
+
+class TestClass:
+    """Class with a memoized property for testing purposes."""
+
+    def a_method(self):
+        """Method that returns a fixed value."""
+        return 42
+
+    @memoize
+    def a_property(self):
+        """Memoized property that calls a_method."""
+        return self.a_method()
+
+
+class TestMemoize(unittest.TestCase):
+    """Test the memoization functionality of
+    the memoize decorator."""
+
+    @patch.object(TestClass, 'a_method', return_value=42)
+    def test_memoize(self, mock_a_method):
+        """Test that a_method is called only once,
+        even with multiple accesses."""
+        test_obj = TestClass()
+
+        # Access the memoized property twice
+        first_call = test_obj.a_property
+        second_call = test_obj.a_property
+
+        # Assert that the result is correct
+        self.assertEqual(first_call, 42)
+        self.assertEqual(second_call, 42)
+
+        # Assert that a_method was only called once
+        mock_a_method.assert_called_once()
