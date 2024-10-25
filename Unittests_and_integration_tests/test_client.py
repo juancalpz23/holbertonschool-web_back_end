@@ -7,7 +7,7 @@ import unittest
 from unittest.mock import patch, PropertyMock, call, Mock
 from parameterized import parameterized
 from client import GithubOrgClient
-from fixtures import org_payload, repos_payload, expected_repos, apache2_repos
+from fixtures import TEST_PAYLOAD
 
 
 class TestGithubOrgClient(unittest.TestCase):
@@ -111,18 +111,12 @@ class TestGithubOrgClient(unittest.TestCase):
         cls.mock_get.side_effect = cls.mocked_requests_get
 
 
-# Define the test payload for parameterized_class
-TEST_PAYLOAD = [
-    (org_payload, repos_payload, expected_repos, apache2_repos),
-]
-
-
 @parameterized_class([
     {
-        "org_payload": org_payload,
-        "repos_payload": repos_payload,
-        "expected_repos": expected_repos,
-        "apache2_repos": apache2_repos,
+        "org_payload",
+        "repos_payload",
+        "expected_repos",
+        "apache2_repos",
     }, TEST_PAYLOAD
 ])
 @classmethod
