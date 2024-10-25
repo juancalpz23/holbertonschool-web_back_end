@@ -99,3 +99,45 @@ class TestGithubOrgClient(unittest.TestCase):
         # Call has_license and compare result to expected value
         result = client.has_license(repo, license_key)
         self.assertEqual(result, expected)
+
+    @classmethod
+    def setUpClass(cls):
+        """Set up the class-level mocks for external requests."""
+        cls.get_patcher = patch("requests.get")
+
+        # Start patcher and configure side_effect for URL-based responses
+        cls.mock_get = cls.get_patcher.start()
+        cls.mock_get.side_effect = cls.mocked_requests_get
+
+    @parameterized_class([
+        {
+            "org_payload": org_payload,
+            "repos_payload": repos_payload,
+            "expected_repos": expected_repos,
+            "apache2_repos": apache2_repos,
+        }
+    ])
+    @classmethod
+    def tearDownClass(cls):
+        """Tear down the class-level mocks."""
+        cls.get_patcher.stop()
+
+    @staticmethod
+    def mocked_requests_get(url):
+        """Simulate responses for different URLs."""
+        if "orgs/" in url:
+            return MagicMock(json=lambda: org_payload)
+        if "repos" in url:
+            return MagicMock(json=lambda: repos_payload)
+
+    def test_public_repos(self):
+        """Test that public_repos returns the expected repository list."""
+        client = GithubOrgClient("test_org")
+        self.assertEqual(client.public_repos(), self.expected_repos)
+
+    def test_public_repos_with_license(self):
+        """Test public_repos filters repos by Apache 2.0 license."""
+        client = GithubOrgClient("test_org")
+        self.assertEqual(
+            client.public_repos(license="apache-2.0"), self.apache2_repos
+        )
