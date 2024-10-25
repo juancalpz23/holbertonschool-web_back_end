@@ -111,75 +111,71 @@ class TestGithubOrgClient(unittest.TestCase):
         cls.mock_get.side_effect = cls.mocked_requests_get
 
 
-@parameterized_class([
-    {
-        "org_payload",
-        "repos_payload",
-        "expected_repos",
-        "apache2_repos",
-    }, TEST_PAYLOAD
-])
-@classmethod
-def setUpClass(cls):
-    """Prepare for testing by patching requests.get and setting mocks."""
-    # Prepare Mock objects for org and repos responses
-    org_mock = Mock()
-    org_mock.json = Mock(return_value=cls.org_payload)
-    cls.org_mock = org_mock
+@parameterized_class(
+    ('org_payload', 'repos_payload', 'expected_repos', 'apache2_repos'),
+    TEST_PAYLOAD
+)
+class TestIntegrationGithubOrgClient(unittest.TestCase):
+    """Integration test for the GithubOrgClient class."""
 
-    repos_mock = Mock()
-    repos_mock.json = Mock(return_value=cls.repos_payload)
-    cls.repos_mock = repos_mock
+    @classmethod
+    def setUpClass(cls):
+        """Set up mocks and patches for integration tests."""
+        # Extract the org and repos payloads from the test fixtures
+        org = TEST_PAYLOAD[0][0]
+        repos = TEST_PAYLOAD[0][1]
 
-    # Start patching requests.get
-    cls.get_patcher = patch('requests.get')
-    cls.get = cls.get_patcher.start()
+        # Mock the org and repos responses
+        org_mock = Mock()
+        org_mock.json = Mock(return_value=org)
+        cls.org_mock = org_mock
 
-    # Define behavior of the patched requests.get using side_effect
-    options = {cls.org_payload["repos_url"]: repos_mock}
-    cls.get.side_effect = lambda url: options.get(url, org_mock)
+        repos_mock = Mock()
+        repos_mock.json = Mock(return_value=repos)
+        cls.repos_mock = repos_mock
 
+        # Patch the 'requests.get' method
+        cls.get_patcher = patch('requests.get')
+        cls.get = cls.get_patcher.start()
 
-@classmethod
-def tearDownClass(cls):
-    """Stop the patcher after tests complete."""
-    cls.get_patcher.stop()
+        # Define how the patched 'requests.get' should behave
+        options = {cls.org_payload["repos_url"]: repos_mock}
+        cls.get.side_effect = lambda url: options.get(url, org_mock)
 
+    @classmethod
+    def tearDownClass(cls):
+        """Stop the patcher after tests are completed."""
+        cls.get_patcher.stop()
 
-def test_public_repos(self):
-    """Test public_repos method without license filtering."""
-    client = GithubOrgClient("x")
+    def test_public_repos(self):
+        """Test that public_repos returns the expected list of repositories."""
+        client = GithubOrgClient("x")
 
-    # Verify the org and repos payloads
-    self.assertEqual(client.org, self.org_payload)
-    self.assertEqual(client.public_repos(), self.expected_repos)
+        # Assert that the client returns the correct org and repo data
+        self.assertEqual(client.org, self.org_payload)
+        self.assertEqual(client.repos_payload, self.repos_payload)
+        self.assertEqual(client.public_repos(), self.expected_repos)
+        self.assertEqual(client.public_repos("NONEXISTENT"), [])
 
-    # Test with non-existent license filter
-    self.assertEqual(client.public_repos("NONEXISTENT"), [])
+        # Verify that the requests were made as expected
+        self.get.assert_has_calls([
+            call("https://api.github.com/orgs/x"),
+            call(self.org_payload["repos_url"])
+        ])
 
-    # Ensure requests.get was called with the correct URLs
-    self.get.assert_has_calls([
-        call("https://api.github.com/orgs/x"),
-        call(self.org_payload["repos_url"]),
-    ])
+    def test_public_repos_with_license(self):
+        """Test that public_repos filters by license correctly."""
+        client = GithubOrgClient("x")
 
+        # Assert that the client returns the correct org and repo data
+        self.assertEqual(client.org, self.org_payload)
+        self.assertEqual(client.repos_payload, self.repos_payload)
+        self.assertEqual(client.public_repos(), self.expected_repos)
+        self.assertEqual(client.public_repos("NONEXISTENT"), [])
+        self.assertEqual(client.public_repos("apache-2.0"), self.apache2_repos)
 
-def test_public_repos_with_license(self):
-    """Test public_repos method with license filtering."""
-    client = GithubOrgClient("x")
-
-    # Verify the org and repos payloads
-    self.assertEqual(client.org, self.org_payload)
-    self.assertEqual(client.public_repos(), self.expected_repos)
-
-    # Test filtering repos by a non-existent license
-    self.assertEqual(client.public_repos("NONEXISTENT"), [])
-
-    # Test filtering repos by 'apache-2.0' license
-    self.assertEqual(client.public_repos("apache-2.0"), self.apache2_repos)
-
-    # Ensure requests.get was called with the correct URLs
-    self.get.assert_has_calls([
-        call("https://api.github.com/orgs/x"),
-        call(self.org_payload["repos_url"]),
-    ])
+        # Verify that the requests were made as expected
+        self.get.assert_has_calls([
+            call("https://api.github.com/orgs/x"),
+            call(self.org_payload["repos_url"])
+        ])
