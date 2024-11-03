@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Flask app with mock user login and welcome message"""
+"""Basic Flask app with Babel and mock login"""
 
-from flask import Flask, render_template, request, g
+from flask import Flask, g, render_template, request
 from flask_babel import Babel, _
 
 app = Flask(__name__)
@@ -23,26 +23,13 @@ class Config:
 
 
 app.config.from_object(Config)
-
-babel = Babel()
-
-
-def get_locale():
-    """Determine the best match with supported languages."""
-    locale_param = request.args.get('locale')
-    if locale_param in app.config['LANGUAGES']:
-        return locale_param
-    return request.accept_languages.best_match(app.config['LANGUAGES'])
+babel = Babel(app)
 
 
-babel.init_app(app, locale_selector=get_locale)
-
-
-def get_user():
-    """Retrieve a user by ID from the URL parameter login_as."""
+def get_user(user_id):
+    """Retrieve a user by ID from the users dictionary."""
     try:
-        user_id = int(request.args.get('login_as'))
-        return users.get(user_id)
+        return users.get(int(user_id))
     except (TypeError, ValueError):
         return None
 
@@ -50,13 +37,26 @@ def get_user():
 @app.before_request
 def before_request():
     """Executed before each request, setting g.user if available."""
-    g.user = get_user()
+    user_id = request.args.get('login_as')
+    g.user = get_user(user_id)
 
 
 @app.route("/", methods=["GET"], strict_slashes=False)
-def hello_world():
-    """Render the template with translatable strings and user info"""
-    return render_template('5-index.html')
+def hello():
+    """Render the template with translatable strings and user info."""
+    login = g.get('user') is not None
+    return render_template('5-index.html', login=login)
+
+
+@babel.localeselector
+def get_locale():
+    """Determine the best match for supported languages."""
+    locale_param = request.args.get('locale')
+    if locale_param in app.config['LANGUAGES']:
+        return locale_param
+    if g.get('user') and g.user.get("locale") in app.config['LANGUAGES']:
+        return g.user["locale"]
+    return request.accept_languages.best_match(app.config['LANGUAGES'])
 
 
 if __name__ == '__main__':
