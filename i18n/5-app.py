@@ -14,6 +14,7 @@ users = {
     4: {"name": "Teletubby", "locale": None, "timezone": "Europe/London"},
 }
 
+
 class Config:
     """Configuration for Babel"""
     LANGUAGES = ["en", "fr"]
