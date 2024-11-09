@@ -1,4 +1,3 @@
-$ cat create_users_table.sql
 -- Script to create a "users" table with countries
 
 CREATE TABLE IF NOT EXISTS users (
