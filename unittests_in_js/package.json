@@ -1,0 +1,15 @@
+{
+    "name": "task_0",
+    "version": "1.0.0",
+    "description": "",
+    "main": "0-calcul.js",
+    "scripts": {
+        "test": "mocha"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "devDependencies": {
+        "mocha": "^10.8.2"
+    }
+}
