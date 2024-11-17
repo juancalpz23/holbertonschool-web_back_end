@@ -1,19 +1,20 @@
-function calculateNumber(type, a, b) {
-    const roundedA = Math.round(a);
-    const roundedB = Math.round(b);
-
+module.exports = function calculateNumber(type, a, b) {
+    const numA = Number(a);
+    const numB = Number(b);
+  
+    if (Number.isNaN(numA) || Number.isNaN(numB))
+    throw TypeError;
+  
     if (type === 'SUM') {
-        return roundedA + roundedB;
+      return (Math.round(numA) + Math.round(numB));
     } else if (type === 'SUBTRACT') {
-        return roundedA - roundedB;
+      return (Math.round(numA) - Math.round(numB));
     } else if (type === 'DIVIDE') {
-        if (roundedB === 0) {
-            return 'Error';
+        if (Math.round(numB) === 0) {
+          return ('Error');
         }
-        return roundedA / roundedB;
+        return (Math.round(numA) / Math.round(numB));
     } else {
-        throw new Error('Invalid operation type');
+      throw TypeError;
     }
-}
-
-module.exports = calculateNumber;
+  }
